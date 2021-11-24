@@ -2,7 +2,7 @@
 
 This is a plugin for [GatsbyJS](https://www.gatsbyjs.com) that allows you to seamlessly integrate ImageEngine into your Gatsby workflow.
 
-It includes functionality to make it easy to use external CMS (e.g.: `Contentful`, `Sanity.io`), static `File` assets created through `gatsby-plugin-filesystem`, and others, allowing it them to be used directly with `Gatsby` components such as `GatsbyImage`.
+It includes functionality to make it easy to use external CMS (e.g.: `Contentful`, `Sanity.io`), static `File` assets created through `gatsby-plugin-filesystem`, and others, allowing them to be used directly with `Gatsby` components such as `GatsbyImage` and `ImageEngine engines`.
 Helpers to build your own urls and ImageEngine related functionality along with components are also exposed in order to provide flexibility in our you organise your assets and how you deal with including them in your final webpages/content.
 
 
@@ -15,6 +15,12 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [Sanity.IO](#sanity-io)
 - [File](#file)
 - [Custom](#custom-nodes)
+[Directives](#directives)
+- [Global Configuration](#configuring-global-directives)
+- [Query Directives](#query-directives)
+- [Graphql Resolvers](#graphql-imageengine-aware-resolvers)
+- [url Resolver](#url-resolver)
+- [gatsbyImageData Resolver](#gatsbyimagedata-resolver)
 
 ### Installation
 
@@ -28,26 +34,26 @@ npm install @imageengine/gatsby-plugin-imageengine
 
 To use the component you define on your `gatsby-config.js` the plugin, under the `plugins` key an object with the `resolve` key pointing to the package name and an `options` key containing at least a `sources` key with an array of sources you want to use.
 
-```json
+```javascript
 plugins: [
-	   // ... other plugins
-	   {
-		 resolve: "@imageengine/gatsby-plugin-imageengine",
-		 options: {
-		   sources: [
-		     {
-		       source: "contentful",
-		       ie_distribution: "https://some-ie-url.cdn.imgeng.in/"
-		     },
-		     {
-		       source: "sanityio",
-		       ie_distribution: "https://another-ie-url.cdn.imgeng.in/"
-		     },
-		     {source: "file"}
-		   ],
-		   ie_distribution: "https://yet-another-ie-url.cdn.imgeng.in/"
-	    	 }
-	  }
+  // ... other plugins
+  {
+    resolve: "@imageengine/gatsby-plugin-imageengine",
+    options: {
+      sources: [
+        {
+	  source: "contentful",
+	  ie_distribution: "https://some-ie-url.cdn.imgeng.in/"
+	},
+	{
+	  source: "sanityio",
+	  ie_distribution: "https://another-ie-url.cdn.imgeng.in/"
+	},
+	{source: "file"}
+      ],
+      ie_distribution: "https://yet-another-ie-url.cdn.imgeng.in/"
+    }
+  }
 ]
 ```
 
@@ -85,7 +91,7 @@ Built-in sources supported by the plugin automatically include `Contentful`, `Sa
 
 You can also set a global ImageEngine cdn at the top level of the `options` object, with the key `ie_distribution` and in this case, `sources` that don't specify their own will use that. Between both, at least one has always to be set. It might be useful to use a global one if different sources use the same cdn address for some reason.
 
-In the example above, `contentful` will use the `ie_distribution` address of `https://0y0v1j5p.cdn.imgeng.in/`, `sanityio` in turn will use `https://lot61nw1.cdn.imgeng.in/` and the `File` assets will default to `https://53bEvX1a.cdn.imgeng.in/`. This means you can create multiple `engines` in `ImageEngine` and use them easily in the same `Gatsby` project.
+In the example above, `contentful` will use the `ie_distribution` address of `https://some-ie-url.cdn.imgeng.in/`, `sanityio` in turn will use `https://another-ie-url.cdn.imgeng.in/` and the `File` assets will default to `https://yet-another-ie-url.cdn.imgeng.in/`. This means you can create multiple `engines` in `ImageEngine` and use them easily in the same `Gatsby` project.
 
 Remember to use the trailing slash on your `ie_distribution` values.
 
@@ -93,12 +99,13 @@ Remember to use the trailing slash on your `ie_distribution` values.
 
 For `contentful` functionality to work you'll need to use [gatsby-source-contentful](https://www.gatsbyjs.com/plugins/gatsby-source-contentful/).
 
-With that in place `Gatsby` will create Graphql Nodes for your Contentful elements. When an element is of the type `ContentfulAsset` we'll create a child node of `ImageEngineAsset` under it, that you can access. 
+With that in place `Gatsby` will create Graphql Nodes for your Contentful elements. When an element is of the type `ContentfulAsset` we'll create a child node of `ImageEngineAsset` under it, that you can access through graphql. 
 
 #### Sanity.IO
 
 For `sanityio` you'll need to use [gatsby-source-sanity](https://www.gatsbyjs.com/plugins/gatsby-source-sanity/)
 
+The same as with `contentful`, an `ImageEngineAsset` node is created as a child node.
 
 #### File
 
@@ -193,4 +200,126 @@ function node_create(node_object: any, base_url: string, tokenized_url: string, 
 
 In this particular case, lets imagine your node is an asset in some CMS and has a `url` field that contains the address to that asset. We replace the portion of the CMS address from the URL with the given token (imported from `gatsby-plugin-imageengine`) and use that as the `tokenized_url` and the original url as the `base_url`.
 This way the plugin will know how to retrieve the final correct url for your asset in the `ImageEngine Engine` distribution.
+
+### Directives
+
+`ImageEngine` uses what is called `directives` to define specific output details of images you want to optimize. 
+
+To see all possible directives and their values [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers)
+
+`@imageengine/imageengine-helpers` is a dependency on this package and you might use any of the types or helpers there included as well if needed.
+
+There's two ways of specifying directives and both can be used together. You can define specific directives as defaults on the configuration, and/or specify them when querying through `graphql`.
+
+#### Configuring Global Directives
+
+For the configuration you can both set them at a global level for all `sources` and individually for each `source`. On your `gatsby-node.js`, in the `@imageengine/gatsby-plugin-imageengine` configuration options
+
+```javascript
+options: {
+  sources: [
+    {
+      source: "contentful",
+      ie_distribution: "https://some-ie-url.cdn.imgeng.in/",
+      directives: {
+        format: "png",
+	compression: 5,
+	fit: "box"
+      }
+    },
+    {
+      source: "sanityio",
+      ie_distribution: "https://another-ie-url.cdn.imgeng.in/"
+    },
+    {source: "file"}
+  ],
+  ie_distribution: "https://yet-another-ie-url.cdn.imgeng.in/",
+  directives: {
+    format: "jpg",
+    sharpness: 5,
+    fit: "cropbox"
+  }
+}
+```
+
+This means that assets for `Contentful` would have the default directives applied to each node automatically of `{format: "png", compression: 5, sharpness: 5, fit: "box"}` and all remaining ones `{format: "jpg", sharpness: 5, fit: "cropbox"}`.
+
+#### Query Directives
+
+These are specified when querying ofr the specific `ImageEngineAsset` fields:
+
+```javascript
+url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+```
+
+The individual directives are applied on top of any global ones, and, ultimately, query level ones applied over any other. Basically the precedence is `query directives -> source default directives -> global default directives`.
+
+#### Graphql ImageEngine aware resolvers
+
+The `ImageEngineAsset` nodes created by `gatsby-plugin-imageengine` expose two resolver fields that accept directives.
+
+- url
+- gatsbyImageData
+
+
+##### url resolver
+`url` returns a simple url, correctly prefixed for the configured `ImageEngine engine` distribution for the given source. This is useful if you want to place the `url` directly in an `img` tag `src` attribute, pass it as a prop to some component, make a link, or for instance as a `background-image` on a CSS selector. 
+
+Let's say you're integrating with `Contentful` and you have an `ImageEngine engine` configured for that `Contentful` source. Now you want to use the `ImageEngine` assets with specific quality and output settings. You can query for your `Contentful` node(s) in the same way as before, and include its `childImageEngineAsset`'s `url` field, for instance:
+
+```javascript
+query {
+  allContentfulAsset {
+    nodes {
+      childImageEngineAsset {
+        url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+      }
+    }
+  }
+}
+```
+
+Assuming you configured your `Contentful` source `ie_distribution` with `https://some-ie.cdn.imgeng.in/` your returned `Contentful` assets would have a structure of:
+
+```javascript
+{
+  data: {
+    allContentfulAsset: {
+      nodes: [
+        {
+	  childImageEngineAsset: {
+	    url: "https://some-ie.cdn.imgeng.in/skyr7ajehjkl/2BRg1oQsnOfNtA5KeDgRMh/844c4abe68cb56ec157aa906d98fe487/file-name.jpg?imgeng=/w_500/h_300/f_gif/m_cropbox/cmpr_10/s_30"
+	  }
+	},
+	// other nodes
+      ]
+    }
+  }
+}
+```
+
+##### gatsbyImageData resolver
+
+The `gatsbyImageData` field is in all forms similar to the `url` but it also accepts the additional properties specific to the `GatsbyImage` component. Your query instead would look like:
+
+```javascript
+query {
+  allContentfulAsset {
+    nodes {
+      title
+      childImageEngineAsset {
+        gatsbyImageData(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+      }
+    }
+  }
+}
+```
+
+Now you can use the returned value in a `GatsbyImage` element, allowing you to use all the inbuilt functionality of that component, such as having the `srcset`, `sizes` and other useful attributes automatically filled, while having access to the fields in the `Contentful` node itself.
+
+```javascript
+{data.allContentfulAsset.nodes.map(({ title, childImageEngineAsset }) => {
+  return <GatsbyImage key={`${title}`} image={childImageEngineAsset.gatsbyImageData} />;
+})}
+```
 
