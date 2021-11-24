@@ -15,14 +15,18 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [Sanity.IO](#sanity-io)
 - [File](#file)
 - [Custom](#custom-nodes)
+
 <br/>
+
 [Directives](#directives)
 - [Global Configuration](#configuring-global-directives)
 - [Query Directives](#query-directives)
 - [Graphql Resolvers](#graphql-imageengine-aware-resolvers)
 - [url Resolver](#url-resolver)
 - [gatsbyImageData Resolver](#gatsbyimagedata-resolver)
+
 <br/>
+
 ### Installation
 
 You need to install the package on your npm project.
