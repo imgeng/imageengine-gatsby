@@ -1,0 +1,9 @@
+{
+    "files": ["./package.json"],
+    "compilerOptions": {
+	"rootDir": ".",
+	"outDir": "./dist",
+	"resolveJsonModule": true,
+	"composite": true
+    }
+}

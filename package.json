@@ -1,0 +1,19 @@
+{
+    "name": "@imageengine/gatsby-plugin-imageengine",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc --build src",
+        "watch": "tsc --build src --watch=true",
+	"publish": "npm run build && npm publish ./dist --access public"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^9.0.13",
+        "@types/node": "^16.11.9",
+        "typescript": "^4.5.2"
+    },
+    "dependencies": {
+        "@imageengine/imageengine-helpers": "^0.0.4",
+        "gatsby-plugin-image": "^2.2.0",
+        "tslib": "^2.3.1"
+    }
+}

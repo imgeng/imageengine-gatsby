@@ -1,0 +1,50 @@
+{
+    "references": [{ "path": "../" }],
+    "compilerOptions": {
+	/* Language and Environment */
+	"target": "es6",
+	"lib": ["dom", "es2015", "es2017"],
+	"experimentalDecorators": true,
+	
+	/* Modules */
+	"module": "commonjs",
+	"rootDir": "./",
+	"resolveJsonModule": true,
+	
+	/* Emit */
+	"declaration": true,
+	"outDir": "../dist",
+	"removeComments": true,
+	"declarationDir": "../dist",
+	
+	/* Interop Constraints */
+	"isolatedModules": true,
+	"allowSyntheticDefaultImports": true,
+	"esModuleInterop": true,
+	
+	/* Type Checking */
+	"strict": true,
+	"noImplicitAny": true,
+	"strictNullChecks": true,
+	"strictFunctionTypes": true,
+	"strictBindCallApply": true,
+	"strictPropertyInitialization": true,
+	"noImplicitThis": true,
+	"useUnknownInCatchVariables": true,
+	"alwaysStrict": true,
+	"noUnusedLocals": true,
+	"noUnusedParameters": true,
+	"exactOptionalPropertyTypes": true,
+	"noImplicitReturns": true,
+	"noFallthroughCasesInSwitch": true,
+	"noUncheckedIndexedAccess": true,
+	"noImplicitOverride": true,
+	"noPropertyAccessFromIndexSignature": true,
+	"allowUnusedLabels": true,
+	"allowUnreachableCode": false,
+
+	/* Completeness */
+	"skipDefaultLibCheck": true,
+	"skipLibCheck": true
+    }
+}
