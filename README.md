@@ -27,6 +27,8 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 
 <br/>
 
+[Plain URLs without Graphql](#plain-urls-without-graphql)
+
 ### Installation
 
 You need to install the package on your npm project.
@@ -251,7 +253,7 @@ This means that assets for `Contentful` would have the default directives applie
 
 #### Query Directives
 
-These are specified when querying ofr the specific `ImageEngineAsset` fields:
+These are specified when querying for the specific `ImageEngineAsset` fields:
 
 ```javascript
 url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
@@ -328,3 +330,6 @@ Now you can use the returned value in a `GatsbyImage` element, allowing you to u
 })}
 ```
 
+### Plain URLs without Graphql
+
+If for some reason you need to generate only urls with the right query parameters for `ImageEngine` you might import the helper functions in [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers) 

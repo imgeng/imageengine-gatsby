@@ -10,9 +10,6 @@ import { static_segment } from "../helpers/path_helpers";
 const checker: IECheckFunction = (node_object) => {
     
     let internal = node_object?.node?.internal;
-    if (internal && internal.type === "File") {
-	console.log("FILETYPE", node_object);
-    }
     return internal && internal.type === "File" && is_image(internal.mediaType);
 };
 

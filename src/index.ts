@@ -18,7 +18,9 @@ import {
 import { default_platforms, child_ofs } from "./default_platforms";
 import { build_IE_url, OBJECT_TO_DIRECTIVES_MAP } from "@imageengine/imageengine-helpers";
 import { static_path_from_source, static_segment } from "./helpers/path_helpers";
-import fs from "fs-extra";
+
+const fs = require("fs-extra");
+
 
 export async function on_create_node(node: any, options: any): Promise<Node> {
     let transforms: IETransformObject[] = extract_transforms(node, options.sources, options);
@@ -196,7 +198,6 @@ function ie_replace_url(source: any, args: any): string {
     // the base_url that will point to a local file, in order for it to work
     // seamlessly while in local dev.
     if (source.parent_type === "File" && process.env["NODE_ENV"] !== "production") {
-	console.log("ie_replace_url", source);
 	return static_segment(source.internal.contentDigest, source.base_url);
     } else {
 	let token = source.replacement_token;
