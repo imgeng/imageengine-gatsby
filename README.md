@@ -111,7 +111,7 @@ For `contentful` functionality to work you'll need to use [gatsby-source-content
 
 With that in place `Gatsby` will create Graphql Nodes for your Contentful elements. When an element is of the type `ContentfulAsset` we'll create a child node of `ImageEngineAsset` under it, that you can access through graphql. 
 
-You need to have an `ImageEngine Engine` pointing to `Contentful`s` CDN and use that address as your `ie_distribution`.
+You need to have an `ImageEngine Engine` pointing to `Contentful`'s CDN and use that address as your `ie_distribution`.
 
 #### Sanity.IO
 
