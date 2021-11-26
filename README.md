@@ -156,7 +156,7 @@ If you use the `gatsby-source-filesystem` plugin with a config of:
 
 And say you have a `main-page-header.jpg`, you can use it on a `GatsbyImage` by doing:
 
-```
+```javascript
 import * as React from "react";
 import { GatsbyImage } from "gatsby-plugin-image";
 import { useStaticQuery, graphql } from "gatsby";
