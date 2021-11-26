@@ -119,7 +119,7 @@ For `sanityio` you'll need to use [gatsby-source-sanity](https://www.gatsbyjs.co
 
 The same as with `contentful`, an `ImageEngineAsset` node is created as a child node.
 
-You need to have an `ImageEngine Engine` pointing to `Sanity`s` CDN and use that address as your `ie_distribution`.
+You need to have an `ImageEngine Engine` pointing to `Sanity`'s CDN and use that address as your `ie_distribution`.
 
 #### File
 
