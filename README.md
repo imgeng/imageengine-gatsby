@@ -125,7 +125,7 @@ You need to have an `ImageEngine Engine` pointing to `Sanity`'s CDN and use that
 
 For `File` assets you'll need to use [gatsby-source-filesystem](https://www.gatsbyjs.com/plugins/gatsby-source-filesystem/)
 
-In this particular case, since it relies on static files, it will follow the same logic of using `File` assets with that plugin - you **cannot** use `StaticImage` with these plugin (read below). 
+In this particular case, since it relies on static files, it will follow the same logic of using `File` assets with that plugin - you **cannot** use `StaticImage` with this plugin (read below). 
 
 In the `filesystem` plugin a file is only made available in the final build, if somewhere you query for the `publicURL` field of that file node. This plugin mimics that so for the final assets to be copied over to your build `static` folder, somewhere you'll need to query at least once for those `ImageEngineAssets` either the `gatsbyImageData` or `url` fields so that those files are copied over to static. This is important, because if you don't, then these files won't be available on your final build, and as such, when using the `ImageEngine` cdn address it won't be able to retrieve them. 
 
