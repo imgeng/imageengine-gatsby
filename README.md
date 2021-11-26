@@ -26,7 +26,8 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [gatsbyImageData Resolver](#gatsbyimagedata-resolver)
 
 <br/>
-
+[React Component](#react-component)
+<br/>
 [Plain URLs without Graphql](#plain-urls-without-graphql)
 
 ### Installation
@@ -64,13 +65,17 @@ plugins: [
 ]
 ```
 
-Most of these plugins on their turn require using additional plugins, exemplified further down one-by-one.
+Most of these plugins on their turn require using additional plugins, including `gatsby-plugin-image`.
+
 
 #### ImageEngineAsset
 
 How does it work? This plugin automatically creates child `ImageEngineAsset` nodes when using supported sources. This means you can use `graphql` to access these nodes and those contain all you need to use `GatsbyImage` or get an `ImageEngine` url. E.g.:
 
 ```javascript
+import { GatsbyImage } from "gatsby-plugin-image";
+import { useStaticQuery, graphql } from "gatsby";
+
 const Lightbox = () => {
     const data = useStaticQuery(graphql`
 
@@ -100,13 +105,13 @@ You can also set a global ImageEngine cdn at the top level of the `options` obje
 
 In the example above, `contentful` will use the `ie_distribution` address of `https://some-ie-url.cdn.imgeng.in/`, `sanityio` in turn will use `https://another-ie-url.cdn.imgeng.in/` and the `File` assets will default to `https://yet-another-ie-url.cdn.imgeng.in/`. This means you can create multiple `engines` in `ImageEngine` and use them easily in the same `Gatsby` project.
 
-Remember to use the trailing slash on your `ie_distribution` values.
-
 #### Contentful
 
 For `contentful` functionality to work you'll need to use [gatsby-source-contentful](https://www.gatsbyjs.com/plugins/gatsby-source-contentful/).
 
 With that in place `Gatsby` will create Graphql Nodes for your Contentful elements. When an element is of the type `ContentfulAsset` we'll create a child node of `ImageEngineAsset` under it, that you can access through graphql. 
+
+You need to have an `ImageEngine Engine` pointing to `Contentful`s` CDN and use that address as your `ie_distribution`.
 
 #### Sanity.IO
 
@@ -114,11 +119,15 @@ For `sanityio` you'll need to use [gatsby-source-sanity](https://www.gatsbyjs.co
 
 The same as with `contentful`, an `ImageEngineAsset` node is created as a child node.
 
+You need to have an `ImageEngine Engine` pointing to `Sanity`s` CDN and use that address as your `ie_distribution`.
+
 #### File
 
 For `File` assets you'll need to use [gatsby-source-filesystem](https://www.gatsbyjs.com/plugins/gatsby-source-filesystem/)
 
-In this particular case, since it relies on static files, it will follow the same logic of using `File` assets with that plugin. In the `filesystem` plugin a file is only made available in the final build, if somewhere you query for the `publicURL` field of that file node. This plugin mimics that so for the final assets to be copied over to your build `static` folder, somewhere you'll need to query at least once for those `ImageEngineAssets` either the `gatsbyImageData` or `url` fields so that those files are copied over to static. This is important, because if you don't, then these files won't be available on your final build, and as such, when using the `ImageEngine` cdn address it won't be able to retrieve them. 
+In this particular case, since it relies on static files, it will follow the same logic of using `File` assets with that plugin - you **cannot** use `StaticImage` with these plugin (read below). 
+
+In the `filesystem` plugin a file is only made available in the final build, if somewhere you query for the `publicURL` field of that file node. This plugin mimics that so for the final assets to be copied over to your build `static` folder, somewhere you'll need to query at least once for those `ImageEngineAssets` either the `gatsbyImageData` or `url` fields so that those files are copied over to static. This is important, because if you don't, then these files won't be available on your final build, and as such, when using the `ImageEngine` cdn address it won't be able to retrieve them. 
 
 An example would be:
 
@@ -131,6 +140,47 @@ allFile {
   }
 }
 ```
+
+Even if you know your image is static at build time, you need to use `GatsbyImage` instead of `StaticImage`. `StaticImage` will try to download the asset at build time to process and create its `sharp` variants, but the `URL` for "production" (when building) will be the URL of `ImageEngine`'s CDN, so it won't exist until it's deployed, but because the build will fail to download the image, the CDN will not be able to mirror the file.
+
+If you use the `gatsby-source-filesystem` plugin with a config of:
+```javascript
+{
+  resolve: `gatsby-source-filesystem`,
+  options: {
+    name: `images`,
+    path: `${__dirname}/src/images/`,
+  },
+}
+```
+
+And say you have a `main-page-header.jpg`, you can use it on a `GatsbyImage` by doing:
+
+```
+import * as React from "react";
+import { GatsbyImage } from "gatsby-plugin-image";
+import { useStaticQuery, graphql } from "gatsby";
+
+const IndexPage = () => {
+  const data = useStaticQuery(graphql`
+    query {
+      file(base: {eq: "main-page-header.jpg"}) {
+        childImageEngineAsset {
+	  gatsbyImageData(width: 500, height: 300, compression: 10)
+	}
+      }
+    }`);
+
+  return (
+    <main>
+      <h1>Some header</h1>
+      <GatsbyImage image={data.file.childImageEngineAsset.gatsbyImageData} />
+    </main>
+  );
+};
+```
+
+While developing the image will be retrieved from your static path, and when building for production the url will be pointing to your `ImageEngine` distribution path with the directives passed on the `gatsbyImageData` field query. In this case `width`, `height` (also used by the `GatsbyImage` component) and `compression` which is unique to `ImageEngine`.
 
 #### Custom Nodes
 
@@ -260,6 +310,11 @@ url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sha
 ```
 
 The individual directives are applied on top of any global ones, and, ultimately, query level ones applied over any other. Basically the precedence is `query directives -> source default directives -> global default directives`.
+Besides the normal directives you can "override" the distribution address set in the config by using:
+
+```javascript
+url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30, ie_distribution: "https://some-dist.com/")
+```
 
 #### Graphql ImageEngine aware resolvers
 
@@ -330,6 +385,11 @@ Now you can use the returned value in a `GatsbyImage` element, allowing you to u
 })}
 ```
 
+### React Component
+
+If you just want a component to help in using `ImageEngine` directives without `graphql` you might prefer [@imageengine/react](https://www.npmjs.com/package/@imageengine/react)
+
 ### Plain URLs without Graphql
 
-If for some reason you need to generate only urls with the right query parameters for `ImageEngine` you might import the helper functions in [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers) 
+If for some reason you only need to generate only urls with the right query parameters for `ImageEngine` you might import the helper functions in [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers)
+

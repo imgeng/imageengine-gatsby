@@ -48,5 +48,5 @@ export const IEDirectivesGraphqlObject = {
     inline: "Boolean",
     keep_meta: "Boolean",
     no_optimization: "Boolean",
-    distribution_url: "String"
+    ie_distribution: "String"
 };

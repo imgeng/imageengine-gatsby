@@ -1,4 +1,4 @@
-const path = require("path");
+import path from "path";
 
 export function static_path_from_source(source: any) {
     return static_path_from_segments(source.internal.contentDigest, source.base_url);

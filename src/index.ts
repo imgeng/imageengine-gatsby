@@ -19,7 +19,7 @@ import { default_platforms, child_ofs } from "./default_platforms";
 import { build_IE_url, OBJECT_TO_DIRECTIVES_MAP } from "@imageengine/imageengine-helpers";
 import { static_path_from_source, static_segment } from "./helpers/path_helpers";
 
-const fs = require("fs-extra");
+import fs from "fs-extra";
 
 
 export async function on_create_node(node: any, options: any): Promise<Node> {
@@ -106,7 +106,7 @@ export function create_schema_customization(context: any) {
 	    fields: {
 		base_url: "String!",
 		tokenized_url: "String!",
-		distribution_url: "String",
+		ie_distribution: "String",
 		replacement_token: "String",
 		directives: "ImageEngineDirectives",
 		url: {
@@ -201,7 +201,7 @@ function ie_replace_url(source: any, args: any): string {
 	return static_segment(source.internal.contentDigest, source.base_url);
     } else {
 	let token = source.replacement_token;
-	let distribution = args.distribution_url || source.distribution_url;
+	let distribution = args.ie_distribution || source.ie_distribution;
 	return source.tokenized_url.replace(token, distribution);
     }
 };
@@ -222,7 +222,6 @@ function gatsby_image_resolver(source: any, args: any): any {
 	...full_args,
 	options: full_args,
 	sourceMetadata: source_metadata,
-	placeholderURL: null,
 	pluginName: "@imageengine/gatsby-plugin-imageengine",
 	filename: url,
 	generateImageSource: ie_from_gatsby_image_resolver
@@ -283,3 +282,6 @@ function maybe_build_static_file_dependency(source: any, ctx: any): void {
 	}
     }	
 };
+
+export * from "./helpers/nodes_helpers";
+export * from "./helpers/path_helpers";
