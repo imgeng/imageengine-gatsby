@@ -359,6 +359,7 @@ The `ImageEngineAsset` nodes created by `gatsby-plugin-imageengine` expose two r
 
 - url
 - gatsbyImageData
+- responsive_details
 
 
 ##### url resolver
