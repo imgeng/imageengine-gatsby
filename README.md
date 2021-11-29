@@ -28,8 +28,10 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [responsive_details Resolver](#responsive-details-resolver)
 
 <br/>
+
 [React Component](#react-component)
 <br/>
+
 [Plain URLs without Graphql](#plain-urls-without-graphql)
 
 ### Installation
