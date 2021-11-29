@@ -25,7 +25,7 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [Graphql Resolvers](#graphql-imageengine-aware-resolvers)
 - [url Resolver](#url-resolver)
 - [gatsbyImageData Resolver](#gatsbyimagedata-resolver)
-- [responsive_details Resolver](#responsive-details-resolver)
+- [responsive_details Resolver](#responsive_details-resolver)
 
 <br/>
 
