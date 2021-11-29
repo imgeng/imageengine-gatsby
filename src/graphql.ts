@@ -2,6 +2,7 @@ export const IEFormatGraphql = `enum IEFormat {
   png
   gif
   jpg
+  jpeg
   bmp
   webp
   jp2
@@ -40,8 +41,8 @@ export const IEDirectivesGraphqlObject = {
     auto_width_fallback: "Int",
     scale_to_screen_width: "Int",
     crop: "[Int]",
-    format: "String",
-    fit: "String",
+    format: "IEFormat",
+    fit: "IEFit",
     compression: "Int",
     sharpness: "Int",
     rotate: "Int",

@@ -21,9 +21,11 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 [Directives](#directives)
 - [Global Configuration](#configuring-global-directives)
 - [Query Directives](#query-directives)
+- [Formats](#formats)
 - [Graphql Resolvers](#graphql-imageengine-aware-resolvers)
 - [url Resolver](#url-resolver)
 - [gatsbyImageData Resolver](#gatsbyimagedata-resolver)
+- [responsive_details Resolver](#responsive-details-resolver)
 
 <br/>
 [React Component](#react-component)
@@ -306,15 +308,48 @@ This means that assets for `Contentful` would have the default directives applie
 These are specified when querying for the specific `ImageEngineAsset` fields:
 
 ```javascript
-url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+url(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30)
 ```
 
 The individual directives are applied on top of any global ones, and, ultimately, query level ones applied over any other. Basically the precedence is `query directives -> source default directives -> global default directives`.
 Besides the normal directives you can "override" the distribution address set in the config by using:
 
 ```javascript
-url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30, ie_distribution: "https://some-dist.com/")
+url(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30, ie_distribution: "https://some-dist.com/")
 ```
+
+Notice that `gatsbyImageData` accepts in addition to the `ImageEngine` directives, the normal `arguments` for it, such as `formats`, `sizes`, `placeholders`, etc. Refer to the [gatsby-plugin-image](https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-plugin-image/).
+
+#### Formats
+
+There's 2 ways of specifying formats. `ImageEngine engines` serve by default the best format the device requesting the image can handle, unless explicitly told to use a given format. `GatsbyImage` on the other hand as a tigher integration with `sharp` in order to provide that sort of functionality natively in `Gatsby` by specifying multiple sources by default.
+
+In order to provide a more natural query and resulting picture/sources for those used to `ImageEngine` capabilities the default `formats` for the `gatsbyImageData` resolver is `[""]`, instead of the usual `["", "webp"]`. 
+
+On a `gatsbyImageData` query, you can specify either `format` or `formats`. `format` when specified overrides `formats`. `formats` when specifying generate variations on the `sources` when included in a `GatsbyImage` component. Notice that both `format` and `formats` (as well as `fit`) are `Graphql`s `enum`s and not strings.
+
+To illustrate the differences you can refer to the following examples:
+
+`gatsbyImageData(width: 500, height: 300)`
+
+No `format`, nor `formats` specified. `GatsbyImage` will render a `picture` element, with an `img` tag and a `single` source. The `ImageEngine` urls won't contain the `format` directive.
+
+`gatsbyImageData(width: 500, height: 300, format: jpg)`
+
+`format` specified. `GatsbyImage` will render a `picture` element, with an `img` tag and a `single` source. The `ImageEngine` urls will contain the `format` directive for `jpeg`.
+
+`gatsbyImageData(width: 500, height: 300, formats: [JPG])`. 
+
+`formats` specified with a single type. `GatsbyImage` will render a single `img` tag, with `srcset` and `sizes`. The `ImageEngine` urls will contain the `format` directive for `jpeg`.
+
+`gatsbyImageData(width: 500, height: 300, formats: [NO_CHANGE, WEBP])`
+
+`formats` specified with  two types, the original (`NO_CHANGE`) and `WEBP`. `GatsbyImage` will render a `picture` element, with an `img` tag, and two `sources`. One for the original and other for the `webp` version. The `source` urls for the `NO_CHANGE` format (the original) won't have a `format` directive, while the `WEBP` source will.
+
+`gatsbyImageData(width: 500, height: 300, formats: [JPG, WEBP])`
+
+`formats` specified with  two types, the `JPG` and `WEBP`. `GatsbyImage` will render a `picture` element, with an `img` tag, and one `source`. The `img` tag will have the attributes of the `JPG` version and the `source` for the `webp` version. 
+All urls generated will have the `format` directive applied, respectively `/f_jpeg` and `/f_webp`.
 
 #### Graphql ImageEngine aware resolvers
 
@@ -334,7 +369,7 @@ query {
   allContentfulAsset {
     nodes {
       childImageEngineAsset {
-        url(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+        url(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30)
       }
     }
   }
@@ -370,7 +405,7 @@ query {
     nodes {
       title
       childImageEngineAsset {
-        gatsbyImageData(width: 500, height: 300, compression: 10, format: "gif", fit: "cropbox", sharpness: 30)
+        gatsbyImageData(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30)
       }
     }
   }
@@ -379,11 +414,44 @@ query {
 
 Now you can use the returned value in a `GatsbyImage` element, allowing you to use all the inbuilt functionality of that component, such as having the `srcset`, `sizes` and other useful attributes automatically filled, while having access to the fields in the `Contentful` node itself.
 
+
 ```javascript
 {data.allContentfulAsset.nodes.map(({ title, childImageEngineAsset }) => {
-  return <GatsbyImage key={`${title}`} image={childImageEngineAsset.gatsbyImageData} />;
+  return <GatsbyImage key={title} image={childImageEngineAsset.gatsbyImageData} alt={title} />;
 })}
 ```
+
+##### responsive_details resolver
+
+```javascript
+query {
+  allContentfulAsset {
+    nodes {
+      title
+      childImageEngineAsset {
+        responsive_details(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30)
+      }
+    }
+  }
+}
+```
+
+This will return an object:
+```javascript
+{
+  width: 500,
+  height: 300,
+  src: "https://....some-source-with-ie.url/file.ext?imgeng=/w_500/h_300/f_gif/cmpr_10/m_cropbox/s_30",
+  srcset: "urls_for_different_sizes_if_specified_in_query",
+  sizes: "sizes_breakdown_for_sizes_specified_in_query"
+}
+```
+
+This can be used directly in an `img` tag, e.g: 
+```javascript
+<img {...data.allContentfulAsset.nodes[0].childImageEngineAsset.responsive_details}>
+```
+
 
 ### React Component
 
