@@ -166,7 +166,7 @@ function gatsby_image_resolver(source: any, args: any): any {
     let with_source_args = directives_args(source, args);
     let full_args = Object.assign(args || {}, with_source_args);
     let url = ie_replace_url(source, full_args);
-    let format = source.internal.mediaType.split("/")[1] 
+    let format = source.internal.mediaType.split("/")[1];
     
     let source_metadata = {
 	width: source.width || with_source_args["width"],
