@@ -17,6 +17,10 @@ export const IEFitGraphql = `enum IEFit {
   box
   letterbox
   cropbox
+  cover
+  fill
+  inside
+  contain
 }`;
 
 export const IEDirectivesGraphql = `type ImageEngineDirectives {

@@ -38,6 +38,7 @@ export function gatsby_image_field_resolver(context: any): SchemaField {
 	    maybe_build_static_file_dependency(source, context);
 
 	    if (args.format) { args.formats = [args.format]; }
+	    args.fit = ie_to_gatsby_fits[args.fit] || args.fit;
 	    
 	    return gatsby_image_resolver(source, args);
 	}
@@ -51,6 +52,7 @@ export function responsive_details_field_resolver(context: any): SchemaField {
 	resolve(source: any, args: any) {
 	    maybe_build_static_file_dependency(source, context);
 	    args.formats = [args.format || ""];
+	    args.fit = ie_to_gatsby_fits[args.fit] || args.fit;
 	    
 	    let resolved = gatsby_image_resolver(source, args),
 	    final_url = ie_image_resolver(source, args),
@@ -100,6 +102,19 @@ function maybe_build_static_file_dependency(source: any, ctx: any): void {
     }	
 };
 
+const gatsby_to_ie_fits: {[key: string]: string} = {
+    cover: "cropbox",
+    fill: "stretch",
+    inside: "box",
+    contain: "letterbox"
+};
+
+const ie_to_gatsby_fits: {[key: string]: string} =  {
+    cropbox: "cover",
+    stretch: "fill",
+    box: "inside",
+    letterbox: "contain"
+}
 
 function directives_args(source: any, args: any): {[key: string]: any} {
     let source_directives = source.directives || {};
@@ -108,6 +123,7 @@ function directives_args(source: any, args: any): {[key: string]: any} {
     return Object.keys(OBJECT_TO_DIRECTIVES_MAP).reduce((acc, key) => {
 	let directive = merged_directives[key];
 	if (directive) {
+	    if (key === "fit") { directive = gatsby_to_ie_fits[directive] || directive; }
 	    acc[key] = directive;
 	}
 	return acc;
