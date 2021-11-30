@@ -1,6 +1,6 @@
 {
     "name": "@imageengine/gatsby-plugin-imageengine",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "main": "index.js",
     "scripts": {
         "build": "tsc --build src",
@@ -19,6 +19,6 @@
         "tslib": "^2.3.1"
     },
     "peerDependencies": {
-	"gatsby-plugin-image": "^2.2.0"
+        "gatsby-plugin-image": "^2.2.0"
     }
 }
