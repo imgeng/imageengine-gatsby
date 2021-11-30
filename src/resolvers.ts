@@ -44,7 +44,7 @@ export function gatsby_image_field_resolver(context: any): SchemaField {
 	    final_url = ie_image_resolver(source, args),
 	    { images } = resolved;
 
-	    if (images) {
+	    if (images && !images.fallback) {
 		images.fallback = {src: final_url};
 		resolved.images = {...images};
 	    }
@@ -65,7 +65,7 @@ export function responsive_details_field_resolver(context: any): SchemaField {
 	    let resolved = gatsby_image_resolver(source, args),
 	    final_url = ie_image_resolver(source, args),
 	    { height, width, images } = resolved,
-	    { sizes, srcSet } = images.sources[0];
+	    { sizes, srcSet } = images.fallback ? images.fallback : (images.sources[0] ? images.sources[0] : {sizes: "", srcSet: ""});
 	    
 	    return {width: width, height: height, sizes: sizes, srcSet: srcSet, src: final_url};
 	}
@@ -166,11 +166,12 @@ function gatsby_image_resolver(source: any, args: any): any {
     let with_source_args = directives_args(source, args);
     let full_args = Object.assign(args || {}, with_source_args);
     let url = ie_replace_url(source, full_args);
+    let format = source.internal.mediaType.split("/")[1] 
     
     let source_metadata = {
 	width: source.width || with_source_args["width"],
 	height: source.height || with_source_args["height"],
-	format: source.internal.mediaType.split("/")[1]
+	format: format === "jpeg" ? "jpg" : format
     };
 
     let image_data_args = {
@@ -189,6 +190,7 @@ function ie_from_gatsby_image_resolver(url: string, width: any, height: any, for
 
     width = width || args.width;
     height = height || args.height;
+    format = format === "jpeg" ? "jpg" : format;
     
     let final_format = (args.formats || []).includes(format) ? format : null
     
