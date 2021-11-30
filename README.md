@@ -324,11 +324,11 @@ Notice that `gatsbyImageData` accepts in addition to the `ImageEngine` directive
 
 #### Formats
 
-There's 2 ways of specifying formats. `ImageEngine engines` serve by default the best format the device requesting the image can handle, unless explicitly told to use a given format. `GatsbyImage` on the other hand as a tigher integration with `sharp` in order to provide that sort of functionality natively in `Gatsby` by specifying multiple sources by default.
+There's 2 ways of specifying formats. `ImageEngine engines` serve by default the best format the device requesting the image can handle, unless explicitly told to use a given format. `GatsbyImage` on the other hand as a tighter integration with `sharp` in order to provide that sort of functionality natively in `Gatsby` by specifying multiple sources by default.
 
 In order to provide a more natural query and resulting picture/sources for those used to `ImageEngine` capabilities the default `formats` for the `gatsbyImageData` resolver is `[""]`, instead of the usual `["", "webp"]`. 
 
-On a `gatsbyImageData` query, you can specify either `format` or `formats`. `format` when specified overrides `formats`. `formats` when specifying generate variations on the `sources` when included in a `GatsbyImage` component. Notice that both `format` and `formats` (as well as `fit`) are `Graphql`s `enum`s and not strings.
+On a `gatsbyImageData` query, you can specify either `format` or `formats`. `format` when specified overrides `formats`. `formats` when specified generates variations on the `sources` when included in a `GatsbyImage` component. Notice that both `format` and `formats` (as well as `fit`) are `Graphql`s `enum`s and not strings.
 
 To illustrate the differences you can refer to the following examples:
 
@@ -355,7 +355,7 @@ All urls generated will have the `format` directive applied, respectively `/f_jp
 
 #### Graphql ImageEngine aware resolvers
 
-The `ImageEngineAsset` nodes created by `gatsby-plugin-imageengine` expose two resolver fields that accept directives.
+The `ImageEngineAsset` nodes created by `gatsby-plugin-imageengine` expose three resolver fields that accept directives.
 
 - url
 - gatsbyImageData
@@ -445,7 +445,7 @@ This will return an object:
   width: 500,
   height: 300,
   src: "https://....some-source-with-ie.url/file.ext?imgeng=/w_500/h_300/f_gif/cmpr_10/m_cropbox/s_30",
-  srcset: "urls_for_different_sizes_if_specified_in_query",
+  srcSet: "urls_for_different_sizes_if_specified_in_query",
   sizes: "sizes_breakdown_for_sizes_specified_in_query"
 }
 ```
