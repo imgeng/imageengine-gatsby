@@ -39,8 +39,16 @@ export function gatsby_image_field_resolver(context: any): SchemaField {
 
 	    if (args.format) { args.formats = [args.format]; }
 	    args.fit = ie_to_gatsby_fits[args.fit] || args.fit;
-	    
-	    return gatsby_image_resolver(source, args);
+
+	    let resolved = gatsby_image_resolver(source, args),
+	    final_url = ie_image_resolver(source, args),
+	    { images } = resolved;
+
+	    if (images) {
+		images.fallback = {src: final_url};
+		resolved.images = {...images};
+	    }
+	    return resolved;
 	}
     };
 };
@@ -56,7 +64,7 @@ export function responsive_details_field_resolver(context: any): SchemaField {
 	    
 	    let resolved = gatsby_image_resolver(source, args),
 	    final_url = ie_image_resolver(source, args),
-	    { height, width, images} = resolved,
+	    { height, width, images } = resolved,
 	    { sizes, srcSet } = images.sources[0];
 	    
 	    return {width: width, height: height, sizes: sizes, srcSet: srcSet, src: final_url};
