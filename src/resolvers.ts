@@ -57,7 +57,7 @@ export function responsive_details_field_resolver(context: any): SchemaField {
 	    { height, width, images} = resolved,
 	    { sizes, srcSet } = images.sources[0];
 	    
-	    return {width: width, height: height, sizes: sizes, srcset: srcSet, src: final_url};
+	    return {width: width, height: height, sizes: sizes, srcSet: srcSet, src: final_url};
 	}
     };
 };
@@ -176,7 +176,7 @@ function ie_from_gatsby_image_resolver(url: string, width: any, height: any, for
 	format: final_format
     };
 
-    return {src: build_IE_url(url, final_args), width, height, format};
+    return {src: build_IE_url(url, final_args), width: width || "auto", height: height || "auto", format};
 };
 
 
@@ -216,10 +216,6 @@ const gatsby_args = {
     breakpoints: {
 	type: "[Int]",
 	description: "Specifies the image widths to generate. You should rarely need to change this. For FIXED and CONSTRAINED images it is better to allow these to be determined automatically, based on the image size. For FULL_WIDTH images this can be used to override the default, which is determined by the plugin. It will never generate any images larger than the source.",
-    },
-    placeholder: {
-        type: "GatsbyImagePlaceholder",
-        description: "Format of generated placeholder image, displayed while the main image loads. BLURRED: a blurred, low resolution image, encoded as a base64 data URI (default) DOMINANT_COLOR: a solid color, calculated from the dominant color of the image. TRACED_SVG: a low-resolution traced SVG of the image. NONE: no placeholder. Set the argument 'backgroundColor' to use a fixed background color.",
     },
     backgroundColor: {
 	type: "String",
