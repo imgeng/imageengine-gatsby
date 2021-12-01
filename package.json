@@ -1,6 +1,6 @@
 {
     "name": "@imageengine/gatsby-plugin-imageengine",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "main": "index.js",
     "scripts": {
         "build": "tsc --build src",
