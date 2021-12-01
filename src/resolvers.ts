@@ -38,15 +38,17 @@ export function gatsby_image_field_resolver(context: any): SchemaField {
 	    maybe_build_static_file_dependency(source, context);
 
 	    if (args.format) { args.formats = [args.format]; }
-	    args.fit = ie_to_gatsby_fits[args.fit] || args.fit;
+	    if (args.fit) { args.fit = ie_to_gatsby_fits[args.fit] || args.fit; }
 
 	    let resolved = gatsby_image_resolver(source, args),
-	    final_url = ie_image_resolver(source, args),
 	    { images } = resolved;
 
 	    if (images && !images.fallback) {
+		
+		let final_url = ie_image_resolver(source, args);
 		images.fallback = {src: final_url};
 		resolved.images = {...images};
+		
 	    }
 	    return resolved;
 	}
@@ -60,7 +62,7 @@ export function responsive_details_field_resolver(context: any): SchemaField {
 	resolve(source: any, args: any) {
 	    maybe_build_static_file_dependency(source, context);
 	    args.formats = [args.format || ""];
-	    args.fit = ie_to_gatsby_fits[args.fit] || args.fit;
+	    if (args.fit) { args.fit = ie_to_gatsby_fits[args.fit] || args.fit; }
 	    
 	    let resolved = gatsby_image_resolver(source, args),
 	    final_url = ie_image_resolver(source, args),
