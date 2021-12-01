@@ -14,7 +14,7 @@ const checker: IECheckFunction = (node_object) => {
 };
 
 const transformer: IETransformFunction = (node_object, options, global_options) => {
-    let dist_url = options?.ie_distribution || global_options?.ie_distribution;
+    let dist_url = options?.ie_delivery_address || global_options?.ie_delivery_address;
     let directives = options?.directives || global_options?.directives;
     let url = get_node_object_url(node_object);
     let digest = node_object?.node?.internal?.contentDigest;

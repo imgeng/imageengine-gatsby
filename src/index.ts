@@ -100,7 +100,7 @@ export function create_schema_customization(context: any) {
 	    fields: {
 		base_url: "String!",
 		tokenized_url: "String!",
-		ie_distribution: "String",
+		ie_delivery_address: "String",
 		replacement_token: "String",
 		directives: "ImageEngineDirectives",
 		url: url_field_resolver(context),

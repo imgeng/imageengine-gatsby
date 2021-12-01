@@ -158,7 +158,7 @@ function ie_replace_url(source: any, args: any): string {
 	return static_segment(source.internal.contentDigest, source.base_url);
     } else {
 	let token = source.replacement_token;
-	let distribution = args.ie_distribution || source.ie_distribution;
+	let distribution = args.ie_delivery_address || source.ie_delivery_address;
 	return source.tokenized_url.replace(token, distribution);
     }
 };

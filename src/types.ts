@@ -3,7 +3,7 @@ export type IETransformFunction = (node: any, options?: IEPluginOption, global_o
 
 export interface IEPluginOption {
     source: string,
-    ie_distribution?: string,
+    ie_delivery_address?: string,
     replace_url?: string,
     checker?: IECheckFunction,
     transform?: IETransformFunction,
@@ -12,7 +12,7 @@ export interface IEPluginOption {
 
 export interface IEPluginOptions {
     sources: IEPluginOption[],
-    ie_distribution?: string,
+    ie_delivery_address?: string,
     directives?: {[key: string]: any}
 };
 

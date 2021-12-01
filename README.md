@@ -1,9 +1,10 @@
 # gatsby-plugin-imageengine
 
-This is a plugin for [GatsbyJS](https://www.gatsbyjs.com) that allows you to seamlessly integrate ImageEngine into your Gatsby workflow.
+This is a plugin for [GatsbyJS](https://www.gatsbyjs.com) that allows you to seamlessly integrate [ImageEngine](https://imageengine.io) into your Gatsby workflow.
 
 It includes functionality to make it easy to use external CMS (e.g.: `Contentful`, `Sanity.io`), static `File` assets created through `gatsby-plugin-filesystem`, and others, allowing them to be used directly with `Gatsby` components such as `GatsbyImage` and `ImageEngine engines`.
-Helpers to build your own urls and ImageEngine related functionality along with components are also exposed in order to provide flexibility in our you organise your assets and how you deal with including them in your final webpages/content.
+
+Helpers to build your own urls and ImageEngine related functionality along with components are also exposed in order to provide flexibility in how you organise your assets and how you deal with including them in your final web pages/content.
 
 
 ## Index:
@@ -36,6 +37,8 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 
 ### Installation
 
+Keep your ImageEngine delivery address at hand. If you don’t have one, [get one here](https://control.imageengine.io/register).
+
 You need to install the package on your npm project.
 
 ```bash
@@ -54,16 +57,16 @@ plugins: [
     options: {
       sources: [
         {
-	  source: "contentful",
-	  ie_distribution: "https://some-ie-url.cdn.imgeng.in/"
-	},
-	{
-	  source: "sanityio",
-	  ie_distribution: "https://another-ie-url.cdn.imgeng.in/"
-	},
-	{source: "file"}
+    source: "contentful",
+    ie_delivery_address: "https://some-ie-url.cdn.imgeng.in/"
+  },
+  {
+    source: "sanityio",
+    ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
+  },
+  {source: "file"}
       ],
-      ie_distribution: "https://yet-another-ie-url.cdn.imgeng.in/"
+      ie_delivery_address: "https://yet-another-ie-url.cdn.imgeng.in/"
     }
   }
 ]
@@ -96,18 +99,18 @@ const Lightbox = () => {
     return (
       <div class="light-box">
         {data.allContentfulAsset.childImageEngineAsset.map(({ gatsbyImageData }, index) => {
-	  return <GatsbyImage key={`image-${index}`} image={gatsbyImageData} />;
-	})}
+    return <GatsbyImage key={`image-${index}`} image={gatsbyImageData} />;
+  })}
       </div>
     );
 }
 ```
 
-Built-in sources supported by the plugin automatically include `Contentful`, `Sanity.io` and `File` assets. In these cases you just need to define an object inside the `sources` key with the `source` and `ie_distribution` (e.g.: `{source: "contentful", ie_distribution: "fully-qualified-url-for-your-imageengine-cdn-address}`).
+Built-in sources supported by the plugin automatically include `Contentful`, `Sanity.io` and `File` assets. In these cases you just need to define an object inside the `sources` key with the `source` and `ie_delivery_address` (e.g.: `{source: "contentful", ie_delivery_address: "imageengine-delivery-address}`).
 
-You can also set a global ImageEngine cdn at the top level of the `options` object, with the key `ie_distribution` and in this case, `sources` that don't specify their own will use that. Between both, at least one has always to be set. It might be useful to use a global one if different sources use the same cdn address for some reason.
+You can also set a global ImageEngine delivery address at the top level of the `options` object, with the key `ie_delivery_address` and in this case, `sources` that don't specify their own will use that. Between both, at least one has always to be set. It might be useful to use a global one if different sources use the same cdn address for some reason.
 
-In the example above, `contentful` will use the `ie_distribution` address of `https://some-ie-url.cdn.imgeng.in/`, `sanityio` in turn will use `https://another-ie-url.cdn.imgeng.in/` and the `File` assets will default to `https://yet-another-ie-url.cdn.imgeng.in/`. This means you can create multiple `engines` in `ImageEngine` and use them easily in the same `Gatsby` project.
+In the example above, `contentful` will use the `ie_delivery_address` address of `https://some-ie-url.cdn.imgeng.in/`, `sanityio` in turn will use `https://another-ie-url.cdn.imgeng.in/` and the `File` assets will default to `https://yet-another-ie-url.cdn.imgeng.in/`. This means you can create multiple `engines` in `ImageEngine` and use them easily in the same `Gatsby` project.
 
 #### Contentful
 
@@ -115,7 +118,7 @@ For `contentful` functionality to work you'll need to use [gatsby-source-content
 
 With that in place `Gatsby` will create Graphql Nodes for your Contentful elements. When an element is of the type `ContentfulAsset` we'll create a child node of `ImageEngineAsset` under it, that you can access through graphql. 
 
-You need to have an `ImageEngine Engine` pointing to `Contentful`'s CDN and use that address as your `ie_distribution`.
+You need to have an ImageEngine delivery address using `Contentful`'s CDN as origin and use that address as your `ie_delivery_address`.
 
 #### Sanity.IO
 
@@ -123,7 +126,7 @@ For `sanityio` you'll need to use [gatsby-source-sanity](https://www.gatsbyjs.co
 
 The same as with `contentful`, an `ImageEngineAsset` node is created as a child node.
 
-You need to have an `ImageEngine Engine` pointing to `Sanity`'s CDN and use that address as your `ie_distribution`.
+You need to have an `ImageEngine` delivery address using `Sanity`'s CDN as origin and use that address as your `ie_delivery_address`.
 
 #### File
 
@@ -131,7 +134,7 @@ For `File` assets you'll need to use [gatsby-source-filesystem](https://www.gats
 
 In this particular case, since it relies on static files, it will follow the same logic of using `File` assets with that plugin - you **cannot** use `StaticImage` with this plugin (read below). 
 
-In the `filesystem` plugin a file is only made available in the final build, if somewhere you query for the `publicURL` field of that file node. This plugin mimics that so for the final assets to be copied over to your build `static` folder, somewhere you'll need to query at least once for those `ImageEngineAssets` either the `gatsbyImageData` or `url` fields so that those files are copied over to static. This is important, because if you don't, then these files won't be available on your final build, and as such, when using the `ImageEngine` cdn address it won't be able to retrieve them. 
+In the `filesystem` plugin a file is only made available in the final build, if somewhere you query for the `publicURL` field of that file node. This plugin mimics that so for the final assets to be copied over to your build `static` folder, somewhere you'll need to query at least once for those `ImageEngineAssets` either the `gatsbyImageData` or `url` fields so that those files are copied over to static. This is important, because if you don't, then these files won't be available on your final build, and as such, when using the `ImageEngine` delivery address address it won't be able to retrieve them. 
 
 An example would be:
 
@@ -170,8 +173,8 @@ const IndexPage = () => {
     query {
       file(base: {eq: "main-page-header.jpg"}) {
         childImageEngineAsset {
-	  gatsbyImageData(width: 500, height: 300, compression: 10)
-	}
+    gatsbyImageData(width: 500, height: 300, compression: 10)
+  }
       }
     }`);
 
@@ -206,8 +209,8 @@ Support for a custom source could then be implemented with:
     sources: [
       {
         source: "my-own-source",
-	ie_distribution: "https://some-url.cdn.imgeng.in/",
-	checker: my_own_source_checker,
+  ie_delivery_address: "https://some-url.cdn.imgeng.in/",
+  checker: my_own_source_checker,
         transform: my_own_transform
       }
     ]
@@ -234,7 +237,7 @@ And your transform:
 import { IETransformFunction, node_create, REPLACEMENT_TOKEN } from "@imageengine/gatsby-plugin-imageengine";
 
 const transformer: IETransformFunction = (node_object, options, global_options) => {
-    let dist_url = options?.ie_distribution || global_options?.ie_distribution;
+    let dist_url = options?.ie_delivery_address || global_options?.ie_delivery_address;
     let directives = options?.directives || global_options?.directives;
     let replace_url = "https://some-cms-address/";
     let { url, contentType } = node_object.node.my_node_details;
@@ -259,12 +262,12 @@ Ultimately you need to call `node_create` with this `node` (which will be the pa
 function node_create(node_object: any, base_url: string, tokenized_url: string, distribution_url: MaybeString,  directives: IEDirectives, mime_type?: string | undefined)
 ```
 
-In this particular case, lets imagine your node is an asset in some CMS and has a `url` field that contains the address to that asset. We replace the portion of the CMS address from the URL with the given token (imported from `gatsby-plugin-imageengine`) and use that as the `tokenized_url` and the original url as the `base_url`.
+In this particular case, let's imagine your node is an asset in some CMS and has a `url` field that contains the address to that asset. We replace the portion of the CMS address from the URL with the given token (imported from `gatsby-plugin-imageengine`) and use that as the `tokenized_url` and the original url as the `base_url`.
 This way the plugin will know how to retrieve the final correct url for your asset in the `ImageEngine Engine` distribution.
 
 ### Directives
 
-`ImageEngine` uses what is called `directives` to define specific output details of images you want to optimize. 
+`ImageEngine` uses what is called `directives` (as query string paramaters) to define specific output details of images you want to optimize. 
 
 To see all possible directives and their values [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers)
 
@@ -281,20 +284,20 @@ options: {
   sources: [
     {
       source: "contentful",
-      ie_distribution: "https://some-ie-url.cdn.imgeng.in/",
+      ie_delivery_address: "https://some-ie-url.cdn.imgeng.in/",
       directives: {
         format: "png",
-	compression: 5,
-	fit: "box"
+  compression: 5,
+  fit: "box"
       }
     },
     {
       source: "sanityio",
-      ie_distribution: "https://another-ie-url.cdn.imgeng.in/"
+      ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
     },
     {source: "file"}
   ],
-  ie_distribution: "https://yet-another-ie-url.cdn.imgeng.in/",
+  ie_delivery_address: "https://yet-another-ie-url.cdn.imgeng.in/",
   directives: {
     format: "jpg",
     sharpness: 5,
@@ -317,16 +320,16 @@ The individual directives are applied on top of any global ones, and, ultimately
 Besides the normal directives you can "override" the distribution address set in the config by using:
 
 ```javascript
-url(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30, ie_distribution: "https://some-dist.com/")
+url(width: 500, height: 300, compression: 10, format: gif, fit: cropbox, sharpness: 30, ie_delivery_address: "https://some-dist.com/")
 ```
 
 Notice that `gatsbyImageData` accepts in addition to the `ImageEngine` directives, the normal `arguments` for it, such as `formats`, `sizes`, `placeholders`, etc. Refer to the [gatsby-plugin-image](https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-plugin-image/).
 
 #### Formats
 
-There's 2 ways of specifying formats. `ImageEngine engines` serve by default the best format the device requesting the image can handle, unless explicitly told to use a given format. `GatsbyImage` on the other hand as a tighter integration with `sharp` in order to provide that sort of functionality natively in `Gatsby` by specifying multiple sources by default.
+There's 2 ways of specifying formats. `ImageEngine` serves by default the best format and compression level based on the network, browser and device requesting the image can handle, unless explicitly told to use a given format. `GatsbyImage` on the other hand has a tighter integration with `sharp` in order to provide that sort of functionality natively in `Gatsby` by specifying multiple sources by default.
 
-In order to provide a more natural query and resulting picture/sources for those used to `ImageEngine` capabilities the default `formats` for the `gatsbyImageData` resolver is `[""]`, instead of the usual `["", "webp"]`. 
+In order to provide a more natural query and resulting picture/sources for those used to `ImageEngine` capabilities the default `formats` for the `gatsbyImageData` resolver is `[""]`, instead of the usual `["", "webp"]`.
 
 On a `gatsbyImageData` query, you can specify either `format` or `formats`. `format` when specified overrides `formats`. `formats` when specified generates variations on the `sources` when included in a `GatsbyImage` component. Notice that both `format` and `formats` (as well as `fit`) are `Graphql`s `enum`s and not strings.
 
@@ -334,11 +337,11 @@ To illustrate the differences you can refer to the following examples:
 
 `gatsbyImageData(width: 500, height: 300)`
 
-No `format`, nor `formats` specified. `GatsbyImage` will render a `picture` element, with an `img` tag and a `single` source. The `ImageEngine` urls won't contain the `format` directive.
+No `format`, nor `formats` specified. `GatsbyImage` an `img` tag with a `srcset` and `sizes`. The `ImageEngine` urls won't contain the `format` directive.
 
 `gatsbyImageData(width: 500, height: 300, format: jpg)`
 
-`format` specified. `GatsbyImage` will render a `picture` element, with an `img` tag and a `single` source. The `ImageEngine` urls will contain the `format` directive for `jpeg`.
+`format` specified. `GatsbyImage` will render an `img` tag with `srcset` and `sizes`. The `ImageEngine` urls will contain the `format` directive for `jpeg`.
 
 `gatsbyImageData(width: 500, height: 300, formats: [JPG])`. 
 
@@ -346,11 +349,11 @@ No `format`, nor `formats` specified. `GatsbyImage` will render a `picture` elem
 
 `gatsbyImageData(width: 500, height: 300, formats: [NO_CHANGE, WEBP])`
 
-`formats` specified with  two types, the original (`NO_CHANGE`) and `WEBP`. `GatsbyImage` will render a `picture` element, with an `img` tag, and two `sources`. One for the original and other for the `webp` version. The `source` urls for the `NO_CHANGE` format (the original) won't have a `format` directive, while the `WEBP` source will.
+`formats` specified with  two types, the original (`NO_CHANGE`) and `WEBP`. `GatsbyImage` will render a `picture` element, with an `img` tag, and one `source` for webp, while the <img> fallback lets ImageEngine decide on the format. The `source` urls for the `NO_CHANGE` format (the original) won't have a `format` directive, while the `WEBP` source will.
 
 `gatsbyImageData(width: 500, height: 300, formats: [JPG, WEBP])`
 
-`formats` specified with  two types, the `JPG` and `WEBP`. `GatsbyImage` will render a `picture` element, with an `img` tag, and one `source`. The `img` tag will have the attributes of the `JPG` version and the `source` for the `webp` version. 
+`formats` specified with  two types, the `JPG` and `WEBP`, `GatsbyImage` will render a `picture` element, with an `img` tag, and one `source`. The `img` tag will have the attributes of the `JPG` version and the `source` for the `webp` version. 
 All urls generated will have the `format` directive applied, respectively `/f_jpeg` and `/f_webp`.
 
 #### Graphql ImageEngine aware resolvers
@@ -379,7 +382,7 @@ query {
 }
 ```
 
-Assuming you configured your `Contentful` source `ie_distribution` with `https://some-ie.cdn.imgeng.in/` your returned `Contentful` assets would have a structure of:
+Assuming you configured your `Contentful` source `ie_delivery_address` with `https://some-ie.cdn.imgeng.in/` your returned `Contentful` assets would have a structure of:
 
 ```javascript
 {
@@ -387,11 +390,11 @@ Assuming you configured your `Contentful` source `ie_distribution` with `https:/
     allContentfulAsset: {
       nodes: [
         {
-	  childImageEngineAsset: {
-	    url: "https://some-ie.cdn.imgeng.in/skyr7ajehjkl/2BRg1oQsnOfNtA5KeDgRMh/844c4abe68cb56ec157aa906d98fe487/file-name.jpg?imgeng=/w_500/h_300/f_gif/m_cropbox/cmpr_10/s_30"
-	  }
-	},
-	// other nodes
+    childImageEngineAsset: {
+      url: "https://some-ie.cdn.imgeng.in/skyr7ajehjkl/2BRg1oQsnOfNtA5KeDgRMh/844c4abe68cb56ec157aa906d98fe487/file-name.jpg?imgeng=/w_500/h_300/f_gif/m_cropbox/cmpr_10/s_30"
+    }
+  },
+  // other nodes
       ]
     }
   }
@@ -463,4 +466,3 @@ If you just want a component to help in using `ImageEngine` directives without `
 ### Plain URLs without Graphql
 
 If for some reason you only need to generate only urls with the right query parameters for `ImageEngine` you might import the helper functions in [@imageengine/imageengine-helpers](https://www.npmjs.com/package/@imageengine/imageengine-helpers)
-
