@@ -2,7 +2,7 @@
 
 This is a plugin for [GatsbyJS](https://www.gatsbyjs.com) that allows you to seamlessly integrate [ImageEngine](https://imageengine.io) into your Gatsby workflow.
 
-It includes functionality to make it easy to use external CMS (e.g.: `Contentful`, `Sanity.io`), static `File` assets created through `gatsby-plugin-filesystem`, and others, allowing them to be used directly with `Gatsby` components such as `GatsbyImage` and `ImageEngine engines`.
+It includes functionality to make it easy to use external CMS (e.g.: `Contentful`, `Sanity.io`, `Storyblok`), static `File` assets created through `gatsby-plugin-filesystem`, and others, allowing them to be used directly with `Gatsby` components such as `GatsbyImage` and `ImageEngine engines`.
 
 Helpers to build your own urls and ImageEngine related functionality along with components are also exposed in order to provide flexibility in how you organise your assets and how you deal with including them in your final web pages/content.
 
@@ -14,6 +14,7 @@ Helpers to build your own urls and ImageEngine related functionality along with 
 - [ImageEngineAsset](#imageengineasset)
 - [Contentful](#contentful)
 - [Sanity.IO](#sanity-io)
+- [Storyblok](#storyblok)
 - [File](#file)
 - [Custom](#custom-nodes)
 
@@ -62,6 +63,10 @@ plugins: [
   },
   {
     source: "sanityio",
+    ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
+  },
+    {
+    source: "storyblok",
     ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
   },
   {source: "file"}
@@ -128,6 +133,13 @@ The same as with `contentful`, an `ImageEngineAsset` node is created as a child 
 
 You need to have an `ImageEngine` delivery address using `Sanity`'s CDN as origin and use that address as your `ie_delivery_address`.
 
+#### Storyblok
+
+For `storyblok` functionality to work you'll need to use [gatsby-source-storyblok](https://www.gatsbyjs.com/plugins/gatsby-source-storyblok/).
+
+With that in place `Gatsby` will create Graphql Nodes for your Storyblok elements. When an element is of the type `StoryblokEntry` we'll create a child node of `ImageEngineAsset` under it, that you can access through graphql. 
+
+You need to have an ImageEngine delivery address using `Storyblok`'s CDN as origin and use that address as your `ie_delivery_address`.
 #### File
 
 For `File` assets you'll need to use [gatsby-source-filesystem](https://www.gatsbyjs.com/plugins/gatsby-source-filesystem/)
@@ -293,6 +305,10 @@ options: {
     },
     {
       source: "sanityio",
+      ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
+    },
+        {
+      source: "storyblok",
       ie_delivery_address: "https://another-ie-url.cdn.imgeng.in/"
     },
     {source: "file"}

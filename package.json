@@ -1,19 +1,22 @@
 {
     "name": "@imageengine/gatsby-plugin-imageengine",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "main": "index.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/imgeng/imageengine-gatsby.git"
     },
-    "keywords": ["imageengine","image cdn","gatsby"],
+    "keywords": [
+        "imageengine",
+        "image cdn",
+        "gatsby"
+    ],
     "author": "ImageEnigine",
     "license": "ISC",
     "bugs": {
-    "url": "https://github.com/imgeng/imageengine-gatsby/issues"
+        "url": "https://github.com/imgeng/imageengine-gatsby/issues"
     },
     "homepage": "https://github.com/imgeng/imageengine-gatsby/",
-
     "scripts": {
         "build": "tsc --build src",
         "watch": "tsc --build src --watch=true",

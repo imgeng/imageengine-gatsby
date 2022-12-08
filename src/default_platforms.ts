@@ -8,7 +8,8 @@ type PlatformObject = {
 const platforms: PlatformObject[] = [
     {platform: "contentful", node_types: ["ContentfulAsset"]},
     {platform: "sanityio", node_types: ["SanityImageAsset"]},
-    {platform: "file", node_types: ["File", "StaticImage"]}
+    {platform: "file", node_types: ["File", "StaticImage"]},
+    {platform: "storyblok", node_types: ["StoryblokEntry"]}
 ];
 
 export const child_ofs: string[] = platforms.reduce((acc, {node_types}) => {
