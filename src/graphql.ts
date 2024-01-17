@@ -10,6 +10,7 @@ export const IEFormatGraphql = `enum IEFormat {
   mp4
   jxr
   avif
+  jxl
 }`;
 
 export const IEFitGraphql = `enum IEFit {
@@ -36,7 +37,9 @@ export const IEDirectivesGraphql = `type ImageEngineDirectives {
   rotate: Int
   inline: Boolean
   keep_meta: Boolean
-  no_optimization: Boolean
+  no_optimization: Boolean,
+  force_download: "Boolean",
+  max_device_pixel_ratio: "Float",
 }`
 
 export const IEDirectivesGraphqlObject = {
@@ -53,5 +56,7 @@ export const IEDirectivesGraphqlObject = {
     inline: "Boolean",
     keep_meta: "Boolean",
     no_optimization: "Boolean",
+    force_download: "Boolean",
+    max_device_pixel_ratio: "Float",
     ie_delivery_address: "String"
 };
